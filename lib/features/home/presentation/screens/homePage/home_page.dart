@@ -3,6 +3,7 @@ import 'package:urmallng_mob_app_v1/features/home/presentation/screens/homePage/
 import 'package:urmallng_mob_app_v1/features/home/presentation/screens/homePage/widgets/categories_widget.dart';
 import 'package:urmallng_mob_app_v1/features/home/presentation/screens/homePage/widgets/products_widget.dart';
 import 'package:urmallng_mob_app_v1/features/home/presentation/screens/homePage/widgets/search_bar_widget.dart';
+import 'package:urmallng_mob_app_v1/shared/styles/app_colors.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -18,6 +19,38 @@ class HomePage extends StatelessWidget {
               SearchBarWidget(),
               CampaignCarouselWidget(),
               const SizedBox(height: 20),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Categories',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          // Handle "See All" tap
+                        },
+                        child: const Text(
+                          'See All',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w300,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
               CategoriesWidget(),
               const SizedBox(height: 20),
               const Padding(

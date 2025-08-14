@@ -7,7 +7,7 @@ class ProductsWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Text(
-        'Products Placeholder',
+        '.',
         style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
       ),
     );

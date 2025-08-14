@@ -1,6 +1,5 @@
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:urmallng_mob_app_v1/shared/styles/app_colors.dart';
 
 class SearchBarWidget extends StatelessWidget {
   const SearchBarWidget({super.key});
