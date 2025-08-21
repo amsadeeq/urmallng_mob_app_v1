@@ -13,11 +13,13 @@ class OnboardingPage {
   final String imagePath;
   final String title;
   final String description;
+  final String backgroundImage;
 
   OnboardingPage({
     required this.imagePath,
     required this.title,
     required this.description,
+    required this.backgroundImage,
   });
 }
 
@@ -27,17 +29,20 @@ final List<OnboardingPage> onboardingPages = [
     imagePath: AppConstants.onboarding_1,
     title: 'Welcome to ${AppConstants.appName}',
     description: 'Discover amazing products and deals at your fingertips.',
+    backgroundImage: AppConstants.backgroundImage1,
   ),
   OnboardingPage(
     imagePath: AppConstants.onboarding_2,
     title: 'Fast & Secure Checkout',
     description: 'Enjoy a seamless and secure shopping experience.',
+    backgroundImage: AppConstants.backgroundImage1,
   ),
   OnboardingPage(
     imagePath: AppConstants.delivery_2,
     title: 'Delivered to Your Door',
     description:
         'Get your favorite items delivered quickly and safely—right to your doorstep. Experience convenience and reliability every time you shop!',
+    backgroundImage: AppConstants.backgroundImage1,
   ),
 ];
 
@@ -75,122 +80,130 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       backgroundColor: AppColors.background, // White background for onboarding
       body: SafeArea(
         // Ensures content is not obscured by system UI (notch, status bar)
-        child: Column(
-          children: [
-            Expanded(
-              child: PageView.builder(
-                controller: _pageController,
-                itemCount: onboardingPages.length,
-                itemBuilder: (context, index) {
-                  final page = onboardingPages[index];
-                  return Padding(
-                    padding: const EdgeInsets.all(24.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image.asset(
-                          page.imagePath,
-                          height:
-                              MediaQuery.of(context).size.height *
-                              0.4, // Responsive image size
-                        ),
-                        const SizedBox(height: 40),
-                        Text(
-                          page.title,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.textPrimary, // Primary text color
+        child: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage(AppConstants.backgroundImage1),
+              fit: BoxFit.cover, // Cover the entire screen
+            ),
+          ),
+          child: Column(
+            children: [
+              Expanded(
+                child: PageView.builder(
+                  controller: _pageController,
+                  itemCount: onboardingPages.length,
+                  itemBuilder: (context, index) {
+                    final page = onboardingPages[index];
+                    return Padding(
+                      padding: const EdgeInsets.all(24.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image.asset(
+                            page.imagePath,
+                            height:
+                                MediaQuery.of(context).size.height *
+                                0.4, // Responsive image size
                           ),
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          page.description,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            fontSize: 16,
+                          const SizedBox(height: 40),
+                          Text(
+                            page.title,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textPrimary, // Primary text color
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            page.description,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              color:
+                                  AppColors.textSecondary, // Secondary text color
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+              // Page Indicator (Dots)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(
+                  onboardingPages.length,
+                  (index) => buildDot(index, _currentPage),
+                ),
+              ),
+              const SizedBox(height: 30),
+              // Navigation Buttons
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24.0,
+                  vertical: 20.0,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    if (_currentPage <
+                        onboardingPages.length -
+                            1) // Show Skip button if not last page
+                      TextButton(
+                        onPressed: () {
+                          // Navigate directly to the login/home screen
+                          _navigateToAuthOrHome();
+                        },
+                        child: const Text(
+                          'Skip',
+                          style: TextStyle(
+                            fontSize: 14,
                             color:
                                 AppColors.textSecondary, // Secondary text color
                           ),
                         ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-            ),
-            // Page Indicator (Dots)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(
-                onboardingPages.length,
-                (index) => buildDot(index, _currentPage),
-              ),
-            ),
-            const SizedBox(height: 30),
-            // Navigation Buttons
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 24.0,
-                vertical: 20.0,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  if (_currentPage <
-                      onboardingPages.length -
-                          1) // Show Skip button if not last page
-                    TextButton(
+                      ),
+                    const Spacer(), // Pushes buttons to ends
+                    ElevatedButton(
                       onPressed: () {
-                        // Navigate directly to the login/home screen
-                        _navigateToAuthOrHome();
+                        if (_currentPage < onboardingPages.length - 1) {
+                          _pageController.nextPage(
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeIn,
+                          );
+                        } else {
+                          // This is the last page, navigate to the next flow
+                          _navigateToAuthOrHome();
+                        }
                       },
-                      child: const Text(
-                        'Skip',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color:
-                              AppColors.textSecondary, // Secondary text color
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                            AppColors.primaryColor, // Primary button color
+                        foregroundColor: AppColors.white, // White text on button
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 30,
+                          vertical: 0,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
                         ),
                       ),
-                    ),
-                  const Spacer(), // Pushes buttons to ends
-                  ElevatedButton(
-                    onPressed: () {
-                      if (_currentPage < onboardingPages.length - 1) {
-                        _pageController.nextPage(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeIn,
-                        );
-                      } else {
-                        // This is the last page, navigate to the next flow
-                        _navigateToAuthOrHome();
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          AppColors.primaryColor, // Primary button color
-                      foregroundColor: AppColors.white, // White text on button
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 30,
-                        vertical: 0,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
+                      child: Text(
+                        _currentPage == onboardingPages.length - 1
+                            ? 'Get Started'
+                            : 'Next',
+                        style: const TextStyle(fontSize: 16),
                       ),
                     ),
-                    child: Text(
-                      _currentPage == onboardingPages.length - 1
-                          ? 'Get Started'
-                          : 'Next',
-                      style: const TextStyle(fontSize: 16),
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
