@@ -11,6 +11,7 @@ class AppConstants {
   static const String avatar = 'assets/images/avatar.png';
   static const String backgroundImage1 = 'assets/images/onboarding_bg.jpg';
   static const String backgroundImage2 = 'assets/images/unboarding_1.jpg';
+  static const String backgroundImage3 = 'assets/images/onboarding_bg_3.jpg';
 
   static const Duration splashDelay = Duration(
     seconds: 10,

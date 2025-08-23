@@ -35,14 +35,14 @@ final List<OnboardingPage> onboardingPages = [
     imagePath: AppConstants.onboarding_2,
     title: 'Fast & Secure Checkout',
     description: 'Enjoy a seamless and secure shopping experience.',
-    backgroundImage: AppConstants.backgroundImage1,
+    backgroundImage: AppConstants.backgroundImage2,
   ),
   OnboardingPage(
     imagePath: AppConstants.delivery_2,
     title: 'Delivered to Your Door',
     description:
         'Get your favorite items delivered quickly and safely—right to your doorstep. Experience convenience and reliability every time you shop!',
-    backgroundImage: AppConstants.backgroundImage1,
+    backgroundImage: AppConstants.backgroundImage3,
   ),
 ];
 
@@ -74,189 +74,175 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     super.dispose();
   }
 
+  void _onPageChanged(int index) => setState(() {
+    _currentPage = index;
+  });
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background, // White background for onboarding
-      body: SafeArea(
-        // Ensures content is not obscured by system UI (notch, status bar)
-        child: Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage(AppConstants.backgroundImage1),
-              fit: BoxFit.cover, // Cover the entire screen
+      body: Stack(
+        children: [
+          // Background Image Crossfade
+          Positioned.fill(
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 500),
+              switchInCurve: Curves.easeInOut,
+              switchOutCurve: Curves.easeInOut,
+              child: Image.asset(
+                onboardingPages[_currentPage].backgroundImage,
+                key: ValueKey<int>(_currentPage),
+                fit: BoxFit.cover,
+                width: double.infinity,
+                height: double.infinity, // Cover the entire screen
+              ),
             ),
           ),
-          child: Column(
-            children: [
-              Expanded(
-                child: PageView.builder(
-                  controller: _pageController,
-                  itemCount: onboardingPages.length,
-                  itemBuilder: (context, index) {
-                    final page = onboardingPages[index];
-                    return Padding(
-                      padding: const EdgeInsets.all(24.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Image.asset(
-                            page.imagePath,
-                            height:
-                                MediaQuery.of(context).size.height *
-                                0.4, // Responsive image size
-                          ),
-                          const SizedBox(height: 40),
-                          Text(
-                            page.title,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              fontSize: 28,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.textPrimary, // Primary text color
+          Positioned.fill(
+            child: Container(
+              color: Colors.black.withOpacity(0.65), // Semi-transparent overlay
+            ),
+          ),
+          // Page content
+          SafeArea(
+            child: Column(
+              children: [
+                Expanded(
+                  child: PageView.builder(
+                    controller: _pageController,
+                    itemCount: onboardingPages.length,
+                    onPageChanged: _onPageChanged,
+                    itemBuilder: (context, index) {
+                      final page = onboardingPages[index];
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24.0,
+                          vertical: 48.0,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Spacer(),
+                            Text(
+                              page.title,
+                              style: Theme.of(context).textTheme.headlineLarge
+                                  ?.copyWith(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                             ),
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            page.description,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              color:
-                                  AppColors.textSecondary, // Secondary text color
+                            const SizedBox(height: 12),
+                            Text(
+                              page.description,
+                              style: Theme.of(context).textTheme.titleMedium
+                                  ?.copyWith(color: Colors.white70),
                             ),
-                          ),
-                        ],
+                            const SizedBox(height: 28),
+                            SizedBox(
+                              width: 160,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.primaryColor,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 14,
+                                  ),
+                                ),
+                                onPressed: () {
+                                  if (index < onboardingPages.length - 1) {
+                                    _pageController.nextPage(
+                                      duration: const Duration(
+                                        milliseconds: 350,
+                                      ),
+                                      curve: Curves.easeInOut,
+                                    );
+                                  } else {
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => const LoginScreen(),
+                                      ),
+                                    );
+                                  }
+                                },
+                                child: Text(
+                                  index < onboardingPages.length - 1
+                                      ? 'Next'
+                                      : 'Get Started',
+                                  style: const TextStyle(
+                                    color: AppColors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ),
+
+                // page indicator and skip
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 20.0,
+                    horizontal: 24,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: List.generate(onboardingPages.length, (i) {
+                          return AnimatedContainer(
+                            duration: const Duration(milliseconds: 300),
+                            margin: const EdgeInsets.symmetric(horizontal: 6.0),
+                            width: _currentPage == i ? 22 : 8,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              color: _currentPage == i
+                                  ? AppColors.primaryColor
+                                  : Colors.white,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          );
+                        }),
                       ),
-                    );
-                  },
-                ),
-              ),
-              // Page Indicator (Dots)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(
-                  onboardingPages.length,
-                  (index) => buildDot(index, _currentPage),
-                ),
-              ),
-              const SizedBox(height: 30),
-              // Navigation Buttons
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24.0,
-                  vertical: 20.0,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    if (_currentPage <
-                        onboardingPages.length -
-                            1) // Show Skip button if not last page
                       TextButton(
                         onPressed: () {
-                          // Navigate directly to the login/home screen
-                          _navigateToAuthOrHome();
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const LoginScreen(),
+                            ),
+                          );
                         },
                         child: const Text(
                           'Skip',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color:
-                                AppColors.textSecondary, // Secondary text color
-                          ),
+                          style: TextStyle(color: Colors.white70),
                         ),
                       ),
-                    const Spacer(), // Pushes buttons to ends
-                    ElevatedButton(
-                      onPressed: () {
-                        if (_currentPage < onboardingPages.length - 1) {
-                          _pageController.nextPage(
-                            duration: const Duration(milliseconds: 300),
-                            curve: Curves.easeIn,
-                          );
-                        } else {
-                          // This is the last page, navigate to the next flow
-                          _navigateToAuthOrHome();
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                            AppColors.primaryColor, // Primary button color
-                        foregroundColor: AppColors.white, // White text on button
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 30,
-                          vertical: 0,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                      ),
-                      child: Text(
-                        _currentPage == onboardingPages.length - 1
-                            ? 'Get Started'
-                            : 'Next',
-                        style: const TextStyle(fontSize: 16),
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
+        ],
       ),
     );
-  }
-
-  // Helper method to build the page indicator dots
-  Widget buildDot(int index, int currentPage) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 200),
-      margin: const EdgeInsets.symmetric(horizontal: 4.0),
-      height: 8,
-      width: currentPage == index ? 24 : 8,
-      decoration: BoxDecoration(
-        color: currentPage == index ? AppColors.primaryColor : AppColors.grey,
-        borderRadius: BorderRadius.circular(4),
-      ),
-    );
-  }
-
-  void _navigateToAuthOrHome() {
-    // In a real app, you'd check if the user is already logged in.
-    // For now, let's navigate to a placeholder for the login screen or home screen.
-    if (mounted) {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          // builder: (context) => const PlaceholderScreen(
-          //   title: 'Authentication/Home Screen',
-          // ), // Placeholder for now
-          // In a real app, this would be:
-          builder: (context) => const LoginScreen(),
-          // OR if already logged in:
-          // builder: (context) => const HomeScreen(),
-        ),
-      );
-    }
   }
 }
 
-// Placeholder for the next screen (e.g., LoginScreen or HomeScreen)
+// Placeholder next screen
 class PlaceholderScreen extends StatelessWidget {
-  final String title;
-  const PlaceholderScreen({super.key, required this.title});
+  const PlaceholderScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(title)),
-      body: Center(
-        child: Text(
-          'Welcome to the $title!',
-          style: const TextStyle(fontSize: 24),
-        ),
-      ),
-    );
+    return const Scaffold(body: Center(child: Text('Next screen')));
   }
 }
