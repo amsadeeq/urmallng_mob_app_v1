@@ -13,6 +13,13 @@ class AppConstants {
   static const String backgroundImage2 = 'assets/images/unboarding_1.jpg';
   static const String backgroundImage3 = 'assets/images/onboarding_bg_3.jpg';
 
+  // product images
+  static const String product1 = 'assets/product/a53_1.png';
+  static const String product2 = 'assets/product/el7.png';
+  static const String product3 = 'assets/product/el4.png';
+  static const String product4 = 'assets/product/beats_studio_3-1.png';
+  static const String product5 = 'assets/product/a53_3.png';
+
   static const Duration splashDelay = Duration(
     seconds: 10,
   ); // How long the splash screen shows
